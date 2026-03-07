@@ -1,0 +1,25 @@
+{
+  "$id": "https://github.com/kohirens/go-login/blob/main/schemas/profile.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "profile",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "A unique identifier."
+    },
+    "name": {
+      "type": "string",
+      "description": "A nick name for the profile."
+    },
+    "userInfo": {
+      "description": "Information about the user.",
+      "$ref": "https://github.com/kohirens/go-login/blob/main/schemas/userinfo.schema.json"
+    },
+    "required": [
+      "id",
+      "name",
+      "userInfo"
+    ]
+  }
+}
