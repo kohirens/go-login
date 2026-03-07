@@ -16,7 +16,22 @@ a profile to account. Ergo, that link takes them to a page where they log in
 with their preferred provider (or sign up without a provider) and ties them to
 the account that sent the invitation link.
 
-## Return Flow
+## Account Structure Hierarchy
+
+* An Account stores Profiles.
+* A single Profile stores:
+  * User Info which is personally identifiable information.
+  * OIDC providers used to log in to the account.
+    * Each provider list device IDs where it was used to log in.
+* An ID is generated when the client logs in on a device that does not already
+  have an ID stored in a Secure HTTP Cookie, then stored in a cookie on that
+  device, and recorded in the profile list of devicesW.
+  * If the cookie is cleared on that device, then the Device ID is
+    orphaned and has to be deleted (manually) from the users profile.
+  * The device is also deleted from the profile's provider list on logout.
+  * So device GUIDs are disposable. It merely represents a login to a device.
+
+## Login Flow Described
 
 We store the path or just the filename to the account in the cookie, saving
 query time.
@@ -50,3 +65,43 @@ query time.
                           2. Send/Show the page the client has requested.
                        2. Unsuccessful:
                           1. Send them to a page where they can re-consent.
+
+## Account Instantiation Described
+
+I just opened my browser and went to the site.
+
+1. It does not find a cookie.
+   1. So it generates an ID for the device and stores it in the HTTP cookie.
+   2. I am presented with login options:
+      1. Make an Account:
+         1. It does not recognize my email address, so it lets me proceed.
+            1. A new profile is made with:
+               1. Set the user info.
+               2. Add this device to the device list.
+            2. Make a new Account:
+               1. Generate a new ID.
+               2. Set the owner to the ID of the first profile.
+            3. End flow.
+         2. It recognized my email, so I'm sent to recover.
+            1. End flow.
+      2. Start an Account with Google as OIDC:
+         1. Click the Login with Google Button.
+            1. The user has not logged in with Google on this device:
+                1. The OIDC flow begins:
+                   1. The user agrees to consent.
+                   2. User is returned to the site.
+                   3. A token is pulled for the user.
+                   4. The user info is returned from Google servers using the
+                      token.
+                   5. A new account is started:
+                      1. A new profile is made with:
+                          1. Set the user info.
+                          2. Add this device to the device list.
+                      2. Make a new Account:
+                          1. Generate a new ID.
+                          2. Set the owner to the ID of the first profile.
+                      3. End flow.
+            2. There is an existing login for the user on this device with Google.
+               1. End flow.
+      3. Start an Account with Apple as OIDC:
+         1. Unknown.
