@@ -6,10 +6,10 @@ multiple.
 
 SSO we want the client to be able to tie multiple logins to their account.
 It can be theirs or someone they want to share the account with. So the account
-is NOT specific to a user. But rather the accounts act as stand-a-lone entities
-that users can access. This will allow for accounts for individuals, families,
-small or large organizations of various kinds. A profile will take the place
-of what we'll call a traditional account.
+is NOT specific to a user. But rather the account acts as a stand-a-lone entity
+that many users can access. This will allow for accounts for individuals,
+families, small or large organizations of various kinds. A profile will take the
+place of what we'll call a traditional account.
 
 We can have the account owner login and send links that invite someone to add
 a profile to account. Ergo, that link takes them to a page where they log in
