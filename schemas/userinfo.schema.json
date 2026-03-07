@@ -1,0 +1,35 @@
+{
+  "$id": "https://github.com/kohirens/go-login/blob/main/schemas/user.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "User Info",
+  "type": "object",
+  "description": "Personally identifiable information about the user.",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier."
+    },
+    "email": {
+      "type": "string",
+      "description": "User email address."
+    },
+    "firstName": {
+      "type": "string",
+      "description": "User first name."
+    },
+    "lastName": {
+      "type": "string",
+      "description": "User last name."
+    },
+    "phone": {
+      "type": "string",
+      "description": "User last name."
+    },
+    "required": [
+      "email",
+      "firstName",
+      "lastName",
+      "phone"
+    ]
+  }
+}
