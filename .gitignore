@@ -4,3 +4,6 @@
 
 # Files
 # -----
+.ash_history
+.netrc
+secrets.env
