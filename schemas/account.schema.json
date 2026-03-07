@@ -1,0 +1,26 @@
+{
+  "$id": "https://github.com/kohirens/go-login/blob/main/schemas/account.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "account",
+  "type": "object",
+  "properties": {
+    "profiles": {
+      "type": "object",
+      "description": "This object contains a map of object, which the keys is a profile ID that maps to a subset of profile info. While redundant using the profile ID as the key allows for quick lookup the object contains a name for display without having to query each profile.",
+      "profile_id": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The profiles ID."
+          },
+          "name": {
+            "type": "string",
+            "description": "A nickname for the profile."
+          }
+        }
+      }
+    }
+  }
+}
