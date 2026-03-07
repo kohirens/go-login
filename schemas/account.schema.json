@@ -4,6 +4,10 @@
   "title": "account",
   "type": "object",
   "properties": {
+    "owner":{
+      "type": "string",
+      "description": "The ID of the profile that made the account. This is not allowed to be changed after initially making the account."
+    },
     "profiles": {
       "type": "object",
       "description": "This object contains a map of object, which the keys is a profile ID that maps to a subset of profile info. While redundant using the profile ID as the key allows for quick lookup the object contains a name for display without having to query each profile.",

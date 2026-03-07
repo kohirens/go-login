@@ -16,6 +16,20 @@
       "description": "Information about the user.",
       "$ref": "https://github.com/kohirens/go-login/blob/main/schemas/userinfo.schema.json"
     },
+    "username": {
+      "description": "Username chosen to log into the site.",
+      "type": "string"
+    },
+    "password": {
+      "description": "Password chosen to log into the site.",
+      "type": "string"
+    },
+    "devices": {
+      "type": "object",
+      "description": "Map of devices used to login to the account.",
+      "properties": {
+      }
+    },
     "required": [
       "id",
       "name",
