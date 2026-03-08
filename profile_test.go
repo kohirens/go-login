@@ -1,6 +1,7 @@
 package login
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 
@@ -41,9 +42,25 @@ func TestProfile_Save(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			p := NewProfile(generateId(), c.UserInfo)
+			p := NewProfile(c.name, generateId(), c.UserInfo)
 			if err := p.Save(c.store); (err != nil) != c.wantErr {
 				t.Errorf("Save() error = %v, wantErr %v", err, c.wantErr)
+				return
+			}
+
+			gotData, _ := os.ReadFile(tmpDir + "/" + p.Id + ".json")
+			var ep *Profile
+			if e := json.Unmarshal(gotData, &ep); e != nil {
+				t.Errorf("Unmarshall Save() error = %v", e.Error())
+				return
+			}
+
+			if ep.Id != p.Id {
+				t.Errorf("Save() error IDs do not match, got = %v\n\twant %v\n", ep.Id, p.Id)
+			}
+
+			if ep.UserInfo.Email != p.UserInfo.Email {
+				t.Errorf("Save() error user emails do not match, got = %v\n\twant %v\n", ep.UserInfo.Email, p.UserInfo.Email)
 			}
 		})
 	}

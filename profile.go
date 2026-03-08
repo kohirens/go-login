@@ -17,9 +17,14 @@ type Profile struct {
 	UserInfo      *UserInfo                `json:"userInfo"`
 }
 
+// Save to storage.
 func (p *Profile) Save(store storage.Storage) error {
+	data, e1 := json.Marshal(p)
+	if e1 != nil {
+		return e1
+	}
 
-	return nil
+	return store.Save(p.Id+".json", data)
 }
 
 type UserInfo struct {
@@ -30,16 +35,17 @@ type UserInfo struct {
 	Phone     string `json:"phone"`
 }
 
-func NewProfile(clientAppId string, userInfo *UserInfo) *Profile {
+func NewProfile(name, clientAppId string, userInfo *UserInfo) *Profile {
 	validateUserInfo(userInfo)
 
 	clientApps := make(map[string]*ClientApp, 1)
 	clientApps[clientAppId] = &ClientApp{}
 	return &Profile{
-		Id:            generateId(),
-		UserInfo:      userInfo,
 		ClientApp:     clientApps,
+		Id:            generateId(),
+		Name:          name,
 		OIDCProviders: make(map[string]*OIDCProvider),
+		UserInfo:      userInfo,
 	}
 }
 
