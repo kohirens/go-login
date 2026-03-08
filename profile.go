@@ -1,12 +1,16 @@
 package login
 
-import "github.com/kohirens/storage"
+import (
+	"encoding/json"
 
-type Device struct{}
+	"github.com/kohirens/storage"
+)
+
+type ClientApp struct{}
 type OIDCProvider struct{}
 
 type Profile struct {
-	Devices       map[string]*Device       `json:"devices"`
+	ClientApp     map[string]*ClientApp    `json:"clientApp"`
 	Id            string                   `json:"id"`
 	Name          string                   `json:"name"`
 	OIDCProviders map[string]*OIDCProvider `json:"oidcProviders"`
@@ -26,14 +30,15 @@ type UserInfo struct {
 	Phone     string `json:"phone"`
 }
 
-func NewProfile(deviceId string, userInfo *UserInfo) *Profile {
+func NewProfile(clientAppId string, userInfo *UserInfo) *Profile {
 	validateUserInfo(userInfo)
 
-	devices := make(map[string]*Device, 1)
+	clientApps := make(map[string]*ClientApp, 1)
+	clientApps[clientAppId] = &ClientApp{}
 	return &Profile{
 		Id:            generateId(),
 		UserInfo:      userInfo,
-		Devices:       devices,
+		ClientApp:     clientApps,
 		OIDCProviders: make(map[string]*OIDCProvider),
 	}
 }

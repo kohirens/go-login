@@ -22,14 +22,16 @@ the account that sent the invitation link.
 * A single Profile stores:
   * User Info which is personally identifiable information.
   * OIDC providers used to log in to the account.
-    * Each provider list device IDs where it was used to log in.
-* An ID is generated when the client logs in on a device that does not already
-  have an ID stored in a Secure HTTP Cookie, then stored in a cookie on that
-  device, and recorded in the profile list of devicesW.
-  * If the cookie is cleared on that device, then the Device ID is
+    * Each provider list client app IDs where it was used to log in.
+* An ID is generated when the client logs in from an app that does not already
+  have an ID stored in its secure storage.
+  * Then stored in that client's app,
+  * and recorded in the profile list of client app IDs.
+  * If the data stored is cleared in that client app, then the client app ID is
     orphaned and has to be deleted (manually) from the users profile.
-  * The device is also deleted from the profile's provider list on logout.
-  * So device GUIDs are disposable. It merely represents a login to a device.
+  * The client app ID is deleted from the profile's provider list on logout.
+  * So client app IDs are disposable. It merely represents a login to a
+    particular client app.
 
 ## Login Flow Described
 
@@ -38,14 +40,14 @@ query time.
 
 * An account stores user profiles.
   * Each profile stores user info.
-    * User info stores providers. They also store devices logged into. A devices
-      ID is generated when the client logs in on that device. If the cookie is
-      cleared on that device, then the Device ID is orphaned and has to be
-      deleted (manually) from the users profile.
-      * The device is also deleted on logout.
-      * So device GUIDs are disposable. It merely represents a login to a device.
-      * The client is successfully logged in. Now they have returned to the site
-        entry page (index.html).
+    * User info stores providers. They also store apps where a client has logged
+      in from. A client app ID is generated when the client logs in from that
+      app. If the app's storage is cleared, then the client app ID is orphaned
+      and has to be deleted (manually) from the users profile.
+      * The client app ID is also deleted on logout.
+      * So client app IDs are disposable, and merely represents a login from
+        a client's app.
+      * The client is successfully logged in.
       * This ends this flow.
 
 1. Lookup the Encrypted Value Cookie:
@@ -71,13 +73,13 @@ query time.
 I just opened my browser and went to the site.
 
 1. It does not find a cookie.
-   1. So it generates an ID for the device and stores it in the HTTP cookie.
+   1. So it generates an ID for the client's app and stores it in there.
    2. I am presented with login options:
       1. Make an Account:
          1. It does not recognize my email address, so it lets me proceed.
             1. A new profile is made with:
                1. Set the user info.
-               2. Add this device to the device list.
+               2. Add this client app ID to the client apps list.
             2. Make a new Account:
                1. Generate a new ID.
                2. Set the owner to the ID of the first profile.
@@ -86,7 +88,7 @@ I just opened my browser and went to the site.
             1. End flow.
       2. Start an Account with Google as OIDC:
          1. Click the Login with Google Button.
-            1. The user has not logged in with Google on this device:
+            1. The client has not logged in with Google from this app:
                 1. The OIDC flow begins:
                    1. The user agrees to consent.
                    2. User is returned to the site.
@@ -96,12 +98,13 @@ I just opened my browser and went to the site.
                    5. A new account is started:
                       1. A new profile is made with:
                           1. Set the user info.
-                          2. Add this device to the device list.
+                          2. Add this client app ID to the client apps list.
                       2. Make a new Account:
                           1. Generate a new ID.
                           2. Set the owner to the ID of the first profile.
                       3. End flow.
-            2. There is an existing login for the user on this device with Google.
+            2. There is an existing login for the client from this app with
+               Google.
                1. End flow.
       3. Start an Account with Apple as OIDC:
          1. Unknown.

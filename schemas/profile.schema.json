@@ -24,9 +24,9 @@
       "description": "Password chosen to log into the site.",
       "type": "string"
     },
-    "devices": {
+    "clientApps": {
       "type": "object",
-      "description": "Map of devices used to login to the account.",
+      "description": "Map of client apps used to login to the account.",
       "properties": {
       }
     },
