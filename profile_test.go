@@ -19,15 +19,15 @@ func TestMain(m *testing.M) {
 func TestProfile_Save(t *testing.T) {
 	fixedStore, _ := storage.NewLocalStorage(tmpDir)
 	cases := []struct {
-		name     string
-		DeviceId string
-		UserInfo *UserInfo
-		store    storage.Storage
-		wantErr  bool
+		name        string
+		ClientAppId string
+		UserInfo    *UserInfo
+		store       storage.Storage
+		wantErr     bool
 	}{
 		{
 			"manual_account",
-			"manual-device-id-01",
+			"manual-client-app-id-01",
 			&UserInfo{
 				Id:        "manual-user-id",
 				FirstName: "SaveTest-01",
