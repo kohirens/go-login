@@ -6,6 +6,10 @@ import (
 	"github.com/kohirens/storage"
 )
 
+const (
+	prefixProfile = "profile/"
+)
+
 type ClientApp struct{}
 type OIDCProvider struct{}
 
@@ -24,7 +28,9 @@ func (p *Profile) Save(store storage.Storage) error {
 		return e1
 	}
 
-	return store.Save(p.Id+".json", data)
+	loc := profileLocation(p.Id)
+
+	return store.Save(loc, data)
 }
 
 type UserInfo struct {
@@ -36,6 +42,9 @@ type UserInfo struct {
 }
 
 func NewProfile(name, clientAppId string, userInfo *UserInfo) *Profile {
+	if name == "" {
+		panic("profile name is required")
+	}
 	validateUserInfo(userInfo)
 
 	clientApps := make(map[string]*ClientApp, 1)
@@ -49,4 +58,25 @@ func NewProfile(name, clientAppId string, userInfo *UserInfo) *Profile {
 	}
 }
 
-func validateUserInfo(info *UserInfo) {}
+func profileLocation(id string) string {
+	return prefixProfile + id + filExt
+}
+
+func validateUserInfo(info *UserInfo) {
+	// TODO: Validate email, firstname, lastname, phone with better standards.
+	if info == nil {
+		panic("nil UserInfo")
+	}
+	if info.FirstName == "" {
+		panic("UserInfo FirstName is empty")
+	}
+	if info.LastName == "" {
+		panic("UserInfo LastName is empty")
+	}
+	if info.Phone == "" {
+		panic("UserInfo Phone is empty")
+	}
+	if info.Email == "" {
+		panic("UserInfo Email is empty")
+	}
+}

@@ -18,7 +18,12 @@ func TestMain(m *testing.M) {
 }
 
 func TestProfile_Save(t *testing.T) {
-	fixedStore, _ := storage.NewLocalStorage(tmpDir)
+	_ = os.MkdirAll(tmpDir+"/"+prefixProfile, os.ModePerm)
+	fixedStore, e1 := storage.NewLocalStorage(tmpDir)
+	if e1 != nil {
+		panic(e1)
+	}
+
 	cases := []struct {
 		name        string
 		ClientAppId string
@@ -48,7 +53,8 @@ func TestProfile_Save(t *testing.T) {
 				return
 			}
 
-			gotData, _ := os.ReadFile(tmpDir + "/" + p.Id + ".json")
+			loc := profileLocation(p.Id)
+			gotData, _ := os.ReadFile(tmpDir + "/" + loc)
 			var ep *Profile
 			if e := json.Unmarshal(gotData, &ep); e != nil {
 				t.Errorf("Unmarshall Save() error = %v", e.Error())
@@ -57,10 +63,12 @@ func TestProfile_Save(t *testing.T) {
 
 			if ep.Id != p.Id {
 				t.Errorf("Save() error IDs do not match, got = %v\n\twant %v\n", ep.Id, p.Id)
+				return
 			}
 
 			if ep.UserInfo.Email != p.UserInfo.Email {
 				t.Errorf("Save() error user emails do not match, got = %v\n\twant %v\n", ep.UserInfo.Email, p.UserInfo.Email)
+				return
 			}
 		})
 	}
