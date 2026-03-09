@@ -1,0 +1,26 @@
+{
+  "$id": "https://github.com/kohirens/go-login/blob/main/schemas/login.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Login",
+  "type": "object",
+  "description": "Login ties a client's email to their account.",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Client's email address."
+    },
+    "password": {
+      "type": "string",
+      "description": "A clients chosen secret hash."
+    },
+    "lastDate": {
+      "type": "string",
+      "description": "Last date a login was accessed."
+    },
+    "required": [
+      "email",
+      "password",
+      "lastDate"
+    ]
+  }
+}
