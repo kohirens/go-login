@@ -2,6 +2,7 @@ package login
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/kohirens/storage"
 )
@@ -25,7 +26,7 @@ type Profile struct {
 func (p *Profile) Save(store storage.Storage) error {
 	data, e1 := json.Marshal(p)
 	if e1 != nil {
-		return e1
+		return fmt.Errorf(stderr.EncodeJSON, e1.Error())
 	}
 
 	loc := profileLocation(p.Id)

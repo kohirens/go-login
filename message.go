@@ -1,7 +1,15 @@
 package login
 
 var stderr = struct {
-	GenUUIDv7 string
+	AccountNotFound,
+	DecodeJSON,
+	EncodeJSON,
+	GenUUIDv7,
+	RemoveAccount string
 }{
-	GenUUIDv7: "cannot generate v7 uuid %v",
+	AccountNotFound: "account %v was not found",
+	DecodeJSON:      "cannot decode JSON, %v",
+	EncodeJSON:      "cannot encode JSON, %v",
+	GenUUIDv7:       "cannot generate v7 uuid %v",
+	RemoveAccount:   "cannot remove account %v",
 }
