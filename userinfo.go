@@ -8,21 +8,35 @@ type UserInfo struct {
 	Phone     string `json:"phone"`
 }
 
+func NewUserInfo(email, firstName, lastName, Phone string) *UserInfo {
+	u := &UserInfo{
+		Email:     email,
+		FirstName: firstName,
+		LastName:  lastName,
+		Phone:     Phone,
+		Id:        generateId(),
+	}
+
+	validateUserInfo(u)
+
+	return u
+}
+
 func validateUserInfo(info *UserInfo) {
 	// TODO: Validate email, firstname, lastname, phone with better standards.
 	if info == nil {
-		panic("nil UserInfo")
+		panic(stderr.NoInfo)
 	}
-	if info.FirstName == "" {
-		panic("UserInfo FirstName is empty")
+	if info.FirstName == "" && len(info.FirstName) < 100 {
+		panic(stderr.UserFirstName)
 	}
-	if info.LastName == "" {
-		panic("UserInfo LastName is empty")
+	if info.LastName == "" && len(info.FirstName) < 100 {
+		panic(stderr.UserLastName)
 	}
-	if info.Phone == "" {
-		panic("UserInfo Phone is empty")
+	if info.Phone == "" && len(info.FirstName) < 100 {
+		panic(stderr.UserPhone)
 	}
 	if info.Email == "" {
-		panic("UserInfo Email is empty")
+		panic(stderr.UserEmail)
 	}
 }
