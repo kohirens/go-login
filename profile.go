@@ -22,7 +22,7 @@ type Profile struct {
 	UserInfo      *UserInfo                `json:"userInfo"`
 }
 
-// Save to storage.
+// Save will save a profile to storage.
 func (p *Profile) Save(store storage.Storage) error {
 	data, e1 := json.Marshal(p)
 	if e1 != nil {
@@ -32,6 +32,35 @@ func (p *Profile) Save(store storage.Storage) error {
 	loc := profileLocation(p.Id)
 
 	return store.Save(loc, data)
+}
+
+// DeleteProfile will delete a profile from storage.
+func DeleteProfile(id string, store storage.Storage) error {
+	loc := profileLocation(id)
+
+	if e1 := store.Remove(loc); e1 != nil {
+		return e1
+	}
+
+	return nil
+}
+
+// LoadProfile will read a profile from storage.
+func LoadProfile(id string, store storage.Storage) (*Profile, error) {
+	loc := profileLocation(id)
+
+	data, e1 := store.Load(loc)
+	if e1 != nil {
+		return nil, e1
+	}
+
+	var p *Profile
+
+	if e2 := json.Unmarshal(data, &p); e2 != nil {
+		return nil, e2
+	}
+
+	return p, nil
 }
 
 func NewProfile(name, clientAppId string, userInfo *UserInfo) *Profile {
