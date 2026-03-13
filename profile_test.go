@@ -1,7 +1,6 @@
 package login
 
 import (
-	"encoding/json"
 	"os"
 	"testing"
 
@@ -48,26 +47,41 @@ func TestProfile_Save(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			p := NewProfile(c.name, generateId(), c.UserInfo)
+			// Save the profile
 			if err := p.Save(c.store); (err != nil) != c.wantErr {
 				t.Errorf("Save() error = %v, wantErr %v", err, c.wantErr)
 				return
 			}
 
-			loc := profileLocation(p.Id)
-			gotData, _ := os.ReadFile(tmpDir + "/" + loc)
-			var ep *Profile
-			if e := json.Unmarshal(gotData, &ep); e != nil {
-				t.Errorf("Unmarshall Save() error = %v", e.Error())
+			// Read the profile
+			gotProf, e2 := LoadProfile(p.Id, fixedStore)
+			if e2 != nil {
+				t.Errorf("LoadProfile() error = %v", e2.Error())
 				return
 			}
 
-			if ep.Id != p.Id {
-				t.Errorf("Save() error IDs do not match, got = %v\n\twant %v\n", ep.Id, p.Id)
+			if gotProf.UserInfo.Email != p.UserInfo.Email {
+				t.Errorf("Save() error user emails do not match, got = %v\n\twant %v\n", gotProf.UserInfo.Email, p.UserInfo.Email)
+				return
+			}
+			if gotProf.Name != p.Name {
+				t.Errorf("LoadProfile() error Name do not match, got = %v\n\twant %v\n", gotProf.Name, p.Name)
+				return
+			}
+			if gotProf.Id != p.Id {
+				t.Errorf("LoadProfile() error ID do not match, got = %v\n\twant %v\n", gotProf.Id, p.Id)
 				return
 			}
 
-			if ep.UserInfo.Email != p.UserInfo.Email {
-				t.Errorf("Save() error user emails do not match, got = %v\n\twant %v\n", ep.UserInfo.Email, p.UserInfo.Email)
+			if e := DeleteProfile(p.Id, fixedStore); e != nil {
+				t.Errorf("DeleteProfile() error = %v", e.Error())
+				return
+			}
+
+			// Read the profile
+			_, e3 := LoadProfile(p.Id, fixedStore)
+			if e3 == nil {
+				t.Errorf("DeleteProfile may not have been successful")
 				return
 			}
 		})
