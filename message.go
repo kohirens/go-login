@@ -8,6 +8,7 @@ var stderr = struct {
 	LongProfileName,
 	NoInfo,
 	RemoveAccount,
+	SaveLogin,
 	UserEmail,
 	UserFirstName,
 	UserLastName,

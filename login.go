@@ -3,6 +3,7 @@ package login
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,11 +21,11 @@ type Login struct {
 	LastDate time.Time `json:"lastDate"`
 }
 
-// Save to storage.
+// Save will save login to storage.
 func (l *Login) Save(store storage.Storage) error {
 	data, e1 := json.Marshal(l)
 	if e1 != nil {
-		return e1
+		return fmt.Errorf(stderr.SaveLogin, e1)
 	}
 
 	loc := loginLocation(l.Email)
@@ -32,7 +33,18 @@ func (l *Login) Save(store storage.Storage) error {
 	return store.Save(loc, data)
 }
 
-// LoadLogin from storage.
+// DeleteLogin will remove a login from storage.
+func DeleteLogin(email string, store storage.Storage) error {
+	loc := loginLocation(email)
+
+	if e := store.Remove(loc); e != nil {
+		return e
+	}
+
+	return nil
+}
+
+// LoadLogin will read a login from storage.
 func LoadLogin(email, password string, store storage.Storage) (*Login, error) {
 	loc := loginLocation(email)
 
@@ -68,6 +80,6 @@ func hashPassword(password string) string {
 }
 
 func loginLocation(email string) string {
-	hash := uuid.NewSHA1(uuid.NameSpaceDNS, []byte(email))
+	hash := uuid.NewSHA1(uuid.Nil, []byte(email))
 	return prefixLogin + hash.String() + filExt
 }
