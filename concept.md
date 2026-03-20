@@ -4,34 +4,37 @@ We need to change how accounts track providers and profiles. Currently, they
 track a single client ID and profile per provider. Change it so they track
 multiple.
 
-SSO we want the client to be able to tie multiple logins to their account.
+SSO we want the client to be able to tie multiple profiles to their account.
 It can be theirs or someone they want to share the account with. So the account
-is NOT specific to a user. But rather the account acts as a stand-a-lone entity
-that many users can access. This will allow for accounts for individuals,
+is NOT specific to a user. But rather the account acts as a stand-a-lone
+entity that many users can access. This will allow for accounts for individuals,
 families, small or large organizations of various kinds. A profile will take the
-place of what we'll call a traditional account.
+place of what we'll call a traditional account. And an account will one to many
+profiles.
 
 We can have the account owner login and send links that invite someone to add
-a profile to account. Ergo, that link takes them to a page where they log in
-with their preferred provider (or sign up without a provider) and ties them to
-the account that sent the invitation link.
+themselves (as an additional profile) to the account. Ergo, that link takes
+them to a page where they log in with their preferred provider (or sign up
+without a provider) and ties them to the account that sent the invitation link.
 
 ## Account Structure Hierarchy
 
 * An Account stores Profiles.
 * A single Profile stores:
-  * User Info which is personally identifiable information.
-  * OIDC providers used to log in to the account.
+  * A users personally identifiable information.
+  * OIDC providers can be used to log in to the account.
     * Each provider list client app IDs where it was used to log in.
-* An ID is generated when the client logs in from an app that does not already
-  have an ID stored in its secure storage.
-  * Then stored in that client's app,
-  * and recorded in the profile list of client app IDs.
-  * If the data stored is cleared in that client app, then the client app ID is
-    orphaned and has to be deleted (manually) from the users profile.
-  * The client app ID is deleted from the profile's provider list on logout.
-  * So client app IDs are disposable. It merely represents a login to a
-    particular client app.
+  * A map of applications the client has logged in from.
+* A ClientApp is:
+  * a way to track when the client successfully logs in from an app.
+  * stored as data in the storage of the applicatoin the client used to login.
+  * only stored when one is not already present in the clients application's
+    secure storage.
+  * recorded in the profile list of client app IDs.
+  * cleared from the secure storage, then it is considered orphaned and has to
+    be deleted (manually) from the users profile.
+  * is deleted from the profile's provider list on logout.
+  * disposable, it merely represents a login to a particular client app.
 
 ## Login Flow Described
 
