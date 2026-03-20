@@ -1,5 +1,8 @@
 package login
 
+// UserInfo is the personally identifiable information of a client/users
+// profile. It MUST be kept secure at all times when it is not required for
+// processing.
 type UserInfo struct {
 	Id        string `json:"id"`
 	FirstName string `json:"firstName"`

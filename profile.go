@@ -11,9 +11,19 @@ const (
 	prefixProfile = "profile/"
 )
 
-type ClientApp struct{}
 type OIDCProvider struct{}
 
+// Profile represents a single client/user (or you), the userinfo is your PII.
+// A profile can only be attached to single account. at any given time.
+// There are 2 types of profiles (primary and secondary). A primary profile
+// will be a profile that was made at the same time an account was made. A
+// primary profile cannot move between accounts because it is set as the owner
+// of the account and is bound to it. A secondary profile is a profile that was
+// later added to the account, like a spouse/child/friend, for the purpose of
+// sharing access to the account. A secondary profile can be removed from an account, where a
+// primary profile cannot because it owns the account.
+// You can think of a profile as like a profile on a game console or streaming
+// service. It represents a client of that service and their access.
 type Profile struct {
 	ClientApp     map[string]*ClientApp    `json:"clientApp"`
 	Id            string                   `json:"id"`
