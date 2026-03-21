@@ -111,3 +111,18 @@ I just opened my browser and went to the site.
                1. End flow.
       3. Start an Account with Apple as OIDC:
          1. Unknown.
+
+## Profile Map
+
+Before a profile can be made there has to be a way to associate it with a
+client's OIDC or email address. Make a ProfileMap structure where the ID is a
+SHA1 hash of the client's OIDC ID or their email address, its value is the
+profile ID it maps to. So its many logins to a single profile ID. This allows:
+pulling the profile:
+1. just by logging in with the method you previously used.
+2. does not work because it is the first login, using a particular method, and
+   needs a new account.
+
+NOTE: This does not solve for when you log in from two different apps using
+different login methods. But if you can prove you own both accounts, then you
+can merge them.
