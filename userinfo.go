@@ -11,12 +11,12 @@ type UserInfo struct {
 	Phone     string `json:"phone"`
 }
 
-func NewUserInfo(email, firstName, lastName, Phone string) *UserInfo {
+func NewUserInfo(email, firstName, lastName, phone string) *UserInfo {
 	u := &UserInfo{
 		Email:     email,
 		FirstName: firstName,
 		LastName:  lastName,
-		Phone:     Phone,
+		Phone:     phone,
 		Id:        generateId(),
 	}
 
