@@ -32,6 +32,38 @@ type Profile struct {
 	UserInfo      *UserInfo                `json:"userInfo"`
 }
 
+// AddClientApp will add the entry to the Profile.ClientApp map.
+func (p *Profile) AddClientApp(ca *ClientApp) {
+	p.ClientApp[ca.Id] = ca
+}
+
+// FindClientApp will search and return the ClientApp or an error otherwise.
+func (p *Profile) FindClientApp(id string) (*ClientApp, error) {
+	if ca, exists := p.ClientApp[id]; exists {
+		return ca, nil
+	}
+	return nil, fmt.Errorf(stderr.FindClientApp, id, p.Name)
+}
+
+// RemoveClientApp will delete the entry from the Profile.
+func (p *Profile) RemoveClientApp(id string) error {
+	// This is a BIG problem if you get an ID that is not in the profile.
+	// It could mean someone hacked successfully or the logic in removal is
+	// wrong somewhere, or more than one request was sent (such as the removal
+	// button was pressed to quickly) and the additional attempt failed.
+	if _, exists := p.ClientApp[id]; !exists {
+		return fmt.Errorf(stderr.RemoveClientApp, id, p.Name)
+	}
+
+	delete(p.ClientApp, id)
+
+	// Verify it was removed.
+	if _, exists := p.ClientApp[id]; exists {
+		return fmt.Errorf(stderr.DeleteClientApp, id, p.Name)
+	}
+	return nil
+}
+
 // Save will save a profile to storage.
 func (p *Profile) Save(store storage.Storage) error {
 	data, e1 := json.Marshal(p)

@@ -2,6 +2,7 @@ package login
 
 import (
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/kohirens/storage"
@@ -14,6 +15,49 @@ const (
 func TestMain(m *testing.M) {
 	_ = os.MkdirAll(tmpDir, 0777)
 	os.Exit(m.Run())
+}
+
+func TestProfile_ClientApp(t *testing.T) {
+	cases := []struct {
+		name        string
+		clientAppId *ClientApp
+		profile     *Profile
+		wantErr     bool
+	}{
+		{
+			"success_add_find_delete_client_app",
+			&ClientApp{Id: "test-01-client-app-id-01"},
+			&Profile{
+				ClientApp: map[string]*ClientApp{},
+				Id:        "test-01-profile-clientapp-id",
+				Name:      "test-01-profile-clientapp-name",
+			},
+			false,
+		},
+	}
+	for _, c := range cases {
+		// Can add a ClientApp to a profile.
+		c.profile.AddClientApp(c.clientAppId)
+
+		// Can find a ClientApp in a profile.
+		got, e2 := c.profile.FindClientApp(c.clientAppId.Id)
+
+		if (e2 != nil) != c.wantErr {
+			t.Errorf("Profile.FindClientApp(%v) gotErr %v, wantErr %v", c.clientAppId, e2, c.wantErr)
+			return
+		}
+
+		if !reflect.DeepEqual(got, c.clientAppId) {
+			t.Errorf("FindClientApp() got = %v, want %v", got, c.clientAppId)
+			return
+		}
+
+		// Can delete a ClientApp from a profile.
+		if e := c.profile.RemoveClientApp(c.clientAppId.Id); (e != nil) != c.wantErr {
+			t.Errorf("Profile.RemoveClientApp(%v) got err %v", c.clientAppId.Id, e)
+			return
+		}
+	}
 }
 
 func TestProfile_Save(t *testing.T) {
