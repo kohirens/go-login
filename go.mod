@@ -1,12 +1,14 @@
 module github.com/kohirens/go-login
 
-go 1.24.0
+go 1.24.9
 
 require (
 	github.com/gofrs/uuid/v5 v5.4.0
 	github.com/google/uuid v1.6.0
+	github.com/kohirens/sso/oidc v0.0.0-20260711224726-73567c8eefc0
+	github.com/kohirens/stdlib v0.0.0-20251219022316-7c7cc7222efd
 	github.com/kohirens/storage v0.0.0-20260222212532-ac6998f7649f
-	github.com/kohirens/www v0.0.0-20260429020112-04dc2eb33bf8
+	github.com/mileusna/useragent v1.3.5
 )
 
 require (
@@ -29,5 +31,4 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.14 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.6 // indirect
 	github.com/aws/smithy-go v1.24.2 // indirect
-	github.com/kohirens/stdlib v0.0.0-20251219022316-7c7cc7222efd // indirect
 )

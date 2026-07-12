@@ -11,7 +11,6 @@ import (
 func TestAccount_Save(t *testing.T) {
 	_ = os.MkdirAll(tmpDir+"/"+prefixAccount, os.ModePerm)
 	_ = os.MkdirAll(tmpDir+"/"+prefixProfile, os.ModePerm)
-	_ = os.MkdirAll(tmpDir+"/"+prefixLogin, os.ModePerm)
 	fixedStore, e1 := storage.NewLocalStorage(tmpDir)
 	if e1 != nil {
 		t.Fatal(e1)
@@ -41,7 +40,7 @@ func TestAccount_Save(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotProfile := NewProfile(tt.profile, tt.appId, tt.user)
+			gotProfile := NewProfile(tt.profile, tt.user)
 			if e := gotProfile.Save(fixedStore); e != nil {
 				t.Fatal(e)
 				return

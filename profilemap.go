@@ -41,5 +41,5 @@ func LoadProfileMap(id string, store storage.Storage) (string, error) {
 
 func profileMapLocation(id string) string {
 	hash := uuid.NewSHA1(uuid.Nil, []byte(id))
-	return prefixProfileMap + hash.String() + filExt
+	return prefixProfileMap + hash.String() + fileExt
 }

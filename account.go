@@ -2,6 +2,7 @@ package login
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/kohirens/storage"
@@ -45,6 +46,36 @@ func DeleteAccount(id string, store storage.Storage) error {
 	return nil
 }
 
+// AccountLink link an account by email and password.
+type AccountLink struct {
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	AccountID string `json:"accountID"`
+}
+
+// FindAccount will read a login from storage.
+func FindAccount(email, password string, store storage.Storage) (*Account, error) {
+	loc := accountLinkLocation(email)
+
+	data, e1 := store.Load(loc)
+	if e1 != nil {
+		return nil, e1
+	}
+
+	var l *AccountLink
+
+	if e2 := json.Unmarshal(data, &l); e2 != nil {
+		return nil, e2
+	}
+
+	// Verify the correct password was entered.
+	if l.Password != hashPassword(password) {
+		return nil, errors.New("invalid password")
+	}
+
+	return LoadAccount(l.AccountID, store)
+}
+
 // LoadAccount from storage a.k.a READ.
 func LoadAccount(id string, store storage.Storage) (*Account, error) {
 	loc := accountLocation(id)
@@ -77,5 +108,5 @@ func NewAccount(profileId, profileName string) *Account {
 }
 
 func accountLocation(id string) string {
-	return prefixAccount + id + filExt
+	return prefixAccount + id + fileExt
 }

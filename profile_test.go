@@ -26,11 +26,11 @@ func TestProfile_ClientApp(t *testing.T) {
 	}{
 		{
 			"success_add_find_delete_client_app",
-			&ClientApp{Id: "test-01-client-app-id-01"},
+			&ClientApp{id: "test-01-client-app-id-01"},
 			&Profile{
-				ClientApp: map[string]*ClientApp{},
-				Id:        "test-01-profile-clientapp-id",
-				Name:      "test-01-profile-clientapp-name",
+				ClientApps: map[string]*ClientApp{},
+				Id:         "test-01-profile-clientapp-id",
+				Name:       "test-01-profile-clientapp-name",
 			},
 			false,
 		},
@@ -40,7 +40,7 @@ func TestProfile_ClientApp(t *testing.T) {
 		c.profile.AddClientApp(c.clientAppId)
 
 		// Can find a ClientApp in a profile.
-		got, e2 := c.profile.FindClientApp(c.clientAppId.Id)
+		got, e2 := c.profile.FindClientApp(c.clientAppId.id)
 
 		if (e2 != nil) != c.wantErr {
 			t.Errorf("Profile.FindClientApp(%v) gotErr %v, wantErr %v", c.clientAppId, e2, c.wantErr)
@@ -53,8 +53,8 @@ func TestProfile_ClientApp(t *testing.T) {
 		}
 
 		// Can delete a ClientApp from a profile.
-		if e := c.profile.RemoveClientApp(c.clientAppId.Id); (e != nil) != c.wantErr {
-			t.Errorf("Profile.RemoveClientApp(%v) got err %v", c.clientAppId.Id, e)
+		if e := c.profile.RemoveClientApp(c.clientAppId.id); (e != nil) != c.wantErr {
+			t.Errorf("Profile.RemoveClientApp(%v) got err %v", c.clientAppId.id, e)
 			return
 		}
 	}
@@ -90,7 +90,7 @@ func TestProfile_Save(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			p := NewProfile(c.name, generateId(), c.UserInfo)
+			p := NewProfile(c.name, c.UserInfo)
 			// Save the profile
 			if err := p.Save(c.store); (err != nil) != c.wantErr {
 				t.Errorf("Save() error = %v, wantErr %v", err, c.wantErr)
