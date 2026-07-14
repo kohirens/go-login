@@ -10,6 +10,10 @@ import (
 	"github.com/mileusna/useragent"
 )
 
+const (
+	prefixClientApp = "client-app/"
+)
+
 // ClientApp represents the client's application used to access this application
 // such as a browser or other application that can view web applications.
 type ClientApp struct {
@@ -23,63 +27,8 @@ type ClientApp struct {
 	Meta *useragent.UserAgent `json:"meta"`
 }
 
-// DeleteClientApp removes previously registered client app info from storage.
-func DeleteClientApp(id string, store storage.Storage) error {
-	if len(id) == 0 {
-		return fmt.Errorf("%v", stderr.ClientAppID)
-	}
-
-	filename := clientAppLocation(id)
-
-	Log.Infof(stdout.ClientAppLoad, filename)
-
-	if e1 := store.Remove(filename); e1 != nil {
-		return fmt.Errorf(stderr.LoadClientApp, e1.Error())
-	}
-
-	return nil
-}
-
-// LoadClientApp retrieve previously registered client app info from storage.
-func LoadClientApp(id string, store storage.Storage) (*ClientApp, error) {
-	if len(id) == 0 {
-		return nil, fmt.Errorf("%v", stderr.ClientAppID)
-	}
-
-	filename := clientAppLocation(id)
-
-	Log.Infof(stdout.ClientAppLoad, filename)
-
-	data, e1 := store.Load(filename)
-	if e1 != nil {
-		return nil, fmt.Errorf(stderr.LoadClientApp, e1.Error())
-	}
-
-	var ca *ClientApp
-	if e2 := json.Unmarshal(data, ca); e2 != nil {
-		return nil, fmt.Errorf(stderr.DecodeJSON, e2.Error())
-	}
-
-	return ca, nil
-}
-
-// RegisterClientApp saves the new user agent to storage and return it.
-//
-//	NOTE: This is the only time the user agent is set in a login.
-func RegisterClientApp(userAgent string, provider oidc.Provider, store storage.Storage) (*ClientApp, error) {
-	ua := useragent.Parse(userAgent)
-	l := &ClientApp{
-		id:           encodeToUUID(userAgent),
-		LastActivity: time.Now().UTC(),
-		Provider:     provider,
-		Meta:         &ua,
-	}
-
-	if e := save(l, store); e != nil {
-		return nil, e
-	}
-
-	return l, nil
+func (ca *ClientApp) MarshalJSON() ([]byte, error) {
+	return []byte(ca.String()), nil
 }
 
 func (ca *ClientApp) String() string {
@@ -138,9 +87,73 @@ func (ca *ClientApp) Update(store storage.Storage) error {
 	return nil
 }
 
+// DeleteClientApp removes previously registered client app info from storage.
+func DeleteClientApp(ca *ClientApp, store storage.Storage) error {
+	if ca == nil {
+		return fmt.Errorf("%v", stderr.ClientAppID)
+	}
+
+	filename := clientAppLocation(ca.id)
+
+	Log.Infof(stdout.ClientAppLoad, filename)
+
+	if e1 := store.Remove(filename); e1 != nil {
+		return fmt.Errorf(stderr.LoadClientApp, e1.Error())
+	}
+
+	return nil
+}
+
+// LoadClientApp retrieve previously registered client app info from storage.
+func LoadClientApp(id string, store storage.Storage) (*ClientApp, error) {
+	if len(id) == 0 {
+		return nil, fmt.Errorf("%v", stderr.ClientAppID)
+	}
+
+	filename := clientAppLocation(id)
+
+	Log.Infof(stdout.ClientAppLoad, filename)
+
+	data, e1 := store.Load(filename)
+	if e1 != nil {
+		return nil, fmt.Errorf(stderr.LoadClientApp, e1.Error())
+	}
+
+	var ca *ClientApp
+	if e2 := json.Unmarshal(data, ca); e2 != nil {
+		return nil, fmt.Errorf(stderr.DecodeJSON, e2.Error())
+	}
+
+	return ca, nil
+}
+
+// RegisterClientApp saves the new user agent to storage and return it.
+//
+//	NOTE: This is the only time the user agent is set in a login.
+func RegisterClientApp(userAgent string, provider oidc.Provider, store storage.Storage) (*ClientApp, error) {
+	ua := useragent.Parse(userAgent)
+	l := &ClientApp{
+		id:           encodeToUUID(userAgent),
+		LastActivity: time.Now().UTC(),
+		Provider:     provider,
+		Meta:         &ua,
+	}
+
+	if e := save(l, store); e != nil {
+		return nil, e
+	}
+
+	return l, nil
+}
+
+// clientAppLocation containing login information.
+func clientAppLocation(id string) string {
+	return prefixClientApp + id + ".json"
+}
+
 // save client app information to storage.
 func save(ca *ClientApp, store storage.Storage) error {
-	data, e1 := json.Marshal(ca)
+	data, e1 := ca.MarshalJSON()
 	if e1 != nil {
 		return fmt.Errorf(stderr.EncodeJSON, e1.Error())
 	}

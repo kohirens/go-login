@@ -7,7 +7,6 @@ import (
 const (
 	fileExt           = ".json"
 	prefixAccountLink = "account-link/"
-	prefixClientApp   = "client-app/"
 )
 
 var (
@@ -16,9 +15,4 @@ var (
 
 func accountLinkLocation(email string) string {
 	return prefixAccountLink + encodeToUUID(email) + fileExt
-}
-
-// clientAppLocation containing login information.
-func clientAppLocation(id string) string {
-	return prefixClientApp + id + ".json"
 }

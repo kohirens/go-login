@@ -9,6 +9,17 @@ import (
 	"github.com/kohirens/storage"
 )
 
+func fixtureStore() (storage.Storage, error) {
+	_ = os.MkdirAll(tmpDir+"/"+prefixAccount, os.ModePerm)
+	_ = os.MkdirAll(tmpDir+"/"+prefixProfile, os.ModePerm)
+	_ = os.MkdirAll(tmpDir+"/"+prefixClientApp, os.ModePerm)
+	store, e1 := storage.NewLocalStorage(tmpDir)
+	if e1 != nil {
+		return nil, e1
+	}
+	return store, nil
+}
+
 func TestAccount_Save(t *testing.T) {
 	_ = os.MkdirAll(tmpDir+"/"+prefixAccount, os.ModePerm)
 	_ = os.MkdirAll(tmpDir+"/"+prefixProfile, os.ModePerm)
