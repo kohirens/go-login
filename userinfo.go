@@ -1,5 +1,7 @@
 package login
 
+import "github.com/kohirens/sso/oidc"
+
 // UserInfo is the personally identifiable information of a client/users
 // profile. It MUST be kept secure at all times when it is not required for
 // processing.
@@ -18,6 +20,23 @@ func NewUserInfo(email, firstName, lastName, phone string) *UserInfo {
 		LastName:  lastName,
 		Phone:     phone,
 		Id:        generateId(),
+	}
+
+	validateUserInfo(u)
+
+	return u
+}
+
+func NewUserByProvider(ui oidc.UserInfo) *UserInfo {
+	u := &UserInfo{
+		Email:     ui.Email(),
+		FirstName: ui.FirstName(),
+		LastName:  ui.LastName(),
+		Id:        generateId(),
+	}
+
+	if p := ui.Phone(); p != "" {
+		u.Phone = p
 	}
 
 	validateUserInfo(u)

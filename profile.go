@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/kohirens/sso/oidc"
 	"github.com/kohirens/storage"
 )
 
@@ -120,6 +121,24 @@ func NewProfile(name string, userInfo *UserInfo) *Profile {
 		Id:       generateId(),
 		Name:     name,
 		UserInfo: userInfo,
+	}
+}
+
+func NewProfileViaProvider(name string, p oidc.Provider) *Profile {
+	if name == "" {
+		panic(stderr.ProfileName)
+	}
+
+	if len(name) > 100 {
+		panic(fmt.Sprintf(stderr.LongProfileName, name))
+	}
+
+	ui := NewUserByProvider(p.UserInfo())
+
+	return &Profile{
+		Id:       generateId(),
+		Name:     name,
+		UserInfo: ui,
 	}
 }
 
