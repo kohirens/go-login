@@ -110,7 +110,7 @@ func LoadProfile(id string, store storage.Storage) (*Profile, error) {
 
 func NewProfile(name string, userInfo *UserInfo) *Profile {
 	if name == "" {
-		panic("profile name is required")
+		panic(stderr.ProfileName)
 	}
 	if len(name) > 100 {
 		panic(fmt.Sprintf(stderr.LongProfileName, name))

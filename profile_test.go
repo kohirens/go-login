@@ -78,7 +78,7 @@ func TestProfile_Save(t *testing.T) {
 			"manual_account",
 			"manual-client-app-id-01",
 			&UserInfo{
-				Id:        "manual-user-id",
+				ID:        "manual-user-id",
 				FirstName: "SaveTest-01",
 				LastName:  "SaveLastTest-02",
 				Email:     "test-01@example.com",

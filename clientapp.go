@@ -1,7 +1,6 @@
 package login
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -93,34 +92,8 @@ func (ca *ClientApp) String() string {
 	return "{" + jsonString + "}"
 }
 
-func (ca *ClientApp) Unmarshal(data []byte) error {
-	if len(data) == 0 || string(data) == "null" {
-		return nil
-	}
-
-	dec := json.NewDecoder(bytes.NewReader(data))
-
-	t1, e1 := dec.Token()
-	if e1 != nil {
-		return e1
-	}
-	delim, ok := t1.(json.Delim)
-	if !ok || delim != '{' {
-		return fmt.Errorf("%v", stderr.DecodeJSONStart)
-	}
-
-	// Process all remaining tokens
-	for dec.More() {
-		t, e2 := dec.Token()
-		if e2 != nil {
-			return e2
-		}
-
-		key, k := t.(string)
-		if !k {
-			return fmt.Errorf("%v", stderr.DecodeJSONKey)
-		}
-
+func (ca *ClientApp) UnmarshalJSON(data []byte) error {
+	mar := func(dec *json.Decoder, key string, o any) error {
 		switch key {
 		case "id":
 			if e := dec.Decode(&ca.id); e != nil {
@@ -144,9 +117,10 @@ func (ca *ClientApp) Unmarshal(data []byte) error {
 				return fmt.Errorf("failed to skip unknown field %s: %w", key, e)
 			}
 		}
+		return nil
 	}
 
-	return nil
+	return unmarshal(data, ca, mar)
 }
 
 // Update client app information.
@@ -162,11 +136,6 @@ func (ca *ClientApp) Update(store storage.Storage) error {
 	}
 
 	return nil
-}
-
-// clientAppLocation containing login information.
-func clientAppLocation(id string) string {
-	return prefixClientApp + id + ".json"
 }
 
 // save client app information to storage.

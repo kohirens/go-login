@@ -3,6 +3,7 @@ package login
 import (
 	"fmt"
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/kohirens/storage"
@@ -29,11 +30,11 @@ func TestAccount_Save(t *testing.T) {
 			"testAccountProfileName-01",
 			"guid-test-0134",
 			&UserInfo{
-				Id:        "",
+				ID:        "google-userid-00001",
 				FirstName: "Test-01",
 				LastName:  "Account-01",
 				Email:     "test-01@example.com",
-				Phone:     "555-5555-5555",
+				Phone:     "555-555-5555",
 			},
 			false,
 		},
@@ -53,15 +54,15 @@ func TestAccount_Save(t *testing.T) {
 			}
 
 			// Make sure the account was indeed saved.
-			gotAct, e2 := LoadAccount(act.Id, fixedStore)
+			gotAct, e2 := LoadAccount(act.id, fixedStore)
 			if e2 != nil {
 				t.Fatal(e2)
 				return
 			}
 
 			// Verify data integrity
-			if act.Id != gotAct.Id {
-				t.Errorf("Save() got = %v, want = %v", gotAct.Id, act.Id)
+			if act.id != gotAct.id {
+				t.Errorf("Save() got = %v, want = %v", gotAct.id, act.id)
 			}
 			if act.Owner != gotAct.Owner {
 				t.Errorf("Save() got = %v, want = %v", gotAct.Owner, act.Owner)
@@ -73,16 +74,73 @@ func TestAccount_Save(t *testing.T) {
 			}
 
 			// Delete the account
-			if e := DeleteAccount(gotAct.Id, fixedStore); e != nil {
+			if e := DeleteAccount(gotAct.id, fixedStore); e != nil {
 				t.Fatal(e)
 				return
 			}
 
 			// Make sure the account was deleted.
-			_, e3 := LoadAccount(act.Id, fixedStore)
+			_, e3 := LoadAccount(act.id, fixedStore)
 			if e3 == nil {
-				t.Fatal(fmt.Sprintf("cannot delete the account %v", gotAct.Id))
+				t.Fatal(fmt.Sprintf("cannot delete the account %v", gotAct.id))
 				return
+			}
+		})
+	}
+}
+
+func TestAccount_String(t *testing.T) {
+	cases := []struct {
+		name    string
+		account *Account
+		want    string
+	}{
+		{
+			"stringify_success",
+			&Account{
+				Owner:    "1",
+				Profiles: map[string]*SubProfile{"test": {"1", "test"}},
+				id:       "1234",
+			},
+			`{"id":"1234","owner":"1","profiles":{"test":{"id":"1","name":"test"}}}`,
+		},
+	}
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.account.String(); got != tt.want {
+				t.Errorf("\nString():\n\t got := %v\n\twant := %v\n", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAccount_Unmarshal(t *testing.T) {
+	cases := []struct {
+		name    string
+		data    []byte
+		want    *Account
+		wantErr bool
+	}{
+		{
+			"success",
+			[]byte(`{"id":"1234","owner":"1234","profiles":{"test":{"id":"1","name":"test"}}}`),
+			&Account{
+				Owner:    "1234",
+				Profiles: map[string]*SubProfile{"test": {"1", "test"}},
+				id:       "1234",
+			},
+			false,
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			got := &Account{}
+			if err := got.UnmarshalJSON(c.data); (err != nil) != c.wantErr {
+				t.Errorf("Unmarshal() error = %v, wantErr %v", err, c.wantErr)
+			}
+
+			if !reflect.DeepEqual(got, c.want) {
+				t.Errorf("Unmarshal() got = %v, want %v", got, c.want)
 			}
 		})
 	}

@@ -1,16 +1,21 @@
 package login
 
-import "github.com/kohirens/sso/oidc"
+import (
+	"regexp"
+
+	"github.com/kohirens/sso/oidc"
+)
 
 // UserInfo is the personally identifiable information of a client/users
 // profile. It MUST be kept secure at all times when it is not required for
 // processing.
 type UserInfo struct {
-	Id        string `json:"id"`
+	ID        string `json:"id"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 	Phone     string `json:"phone"`
+	Locale    string `json:"locale"`
 }
 
 func NewUserInfo(email, firstName, lastName, phone string) *UserInfo {
@@ -19,7 +24,7 @@ func NewUserInfo(email, firstName, lastName, phone string) *UserInfo {
 		FirstName: firstName,
 		LastName:  lastName,
 		Phone:     phone,
-		Id:        generateId(),
+		ID:        generateId(),
 	}
 
 	validateUserInfo(u)
@@ -32,7 +37,7 @@ func NewUserByProvider(ui oidc.UserInfo) *UserInfo {
 		Email:     ui.Email(),
 		FirstName: ui.FirstName(),
 		LastName:  ui.LastName(),
-		Id:        generateId(),
+		ID:        generateId(),
 	}
 
 	if p := ui.Phone(); p != "" {
@@ -55,9 +60,17 @@ func validateUserInfo(info *UserInfo) {
 	if info.LastName == "" && len(info.FirstName) < 100 {
 		panic(stderr.UserLastName)
 	}
-	if info.Phone == "" && len(info.FirstName) < 100 {
-		panic(stderr.UserPhone)
+	// TODO: Validate phone number based on locale
+	if info.Phone != "" {
+		if info.Locale == "en-US" {
+			re := regexp.MustCompile("^[0-9]{3}-[0-9]{3}-[0-9]{4}$")
+			if !re.MatchString(info.Phone) {
+				panic(stderr.UserPhone)
+			}
+		}
+
 	}
+
 	if info.Email == "" {
 		panic(stderr.UserEmail)
 	}
