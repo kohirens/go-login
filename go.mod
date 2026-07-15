@@ -5,7 +5,7 @@ go 1.24.9
 require (
 	github.com/gofrs/uuid/v5 v5.4.0
 	github.com/google/uuid v1.6.0
-	github.com/kohirens/sso/oidc v0.0.0-20260714231838-1120055815ec
+	github.com/kohirens/sso/oidc v0.0.0-20260715000949-38fb171a1efe
 	github.com/kohirens/stdlib v0.0.0-20251219022316-7c7cc7222efd
 	github.com/kohirens/storage v0.0.0-20260222212532-ac6998f7649f
 	github.com/mileusna/useragent v1.3.5
